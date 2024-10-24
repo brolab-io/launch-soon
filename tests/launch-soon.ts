@@ -7,10 +7,11 @@ describe("launch-soon", () => {
   anchor.setProvider(anchor.AnchorProvider.env());
 
   const program = anchor.workspace.LaunchSoon as Program<LaunchSoon>;
+  const FEE = 100;
 
   it("Is initialized!", async () => {
     // Add your test here.
-    const tx = await program.methods.initialize().rpc();
+    const tx = await program.methods.initialize(FEE).rpc();
     console.log("Your transaction signature", tx);
   });
 });
