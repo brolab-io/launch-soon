@@ -52,5 +52,5 @@ anchor test
 # How to deploy?
 
 ```bash
-anchor deploy --cluster.provider devnet
+anchor deploy --provider.cluster https://rpc.devnet.soo.network/rpc
 ```
