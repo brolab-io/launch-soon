@@ -1,16 +1,13 @@
 use anchor_lang::prelude::*;
 
 #[constant]
-pub const SETTING_SEED: &[u8] = b"setting";
+pub const CONFIG_SEED: &[u8] = b"CONFIG";
+
 #[constant]
-pub const LAUNCH_POOL_SEED: &[u8] = b"launchpool";
+pub const POOL_SEED: &[u8] = b"POOL";
+
 #[constant]
-pub const TREASURER_SEED: &[u8] = b"treasurer";
+pub const TREASURER_SEED: &[u8] = b"TREASURER";
+
 #[constant]
-pub const VAULT_SEED: &[u8] = b"vault";
-#[constant]
-pub const USER_POOL_SEED: &[u8] = b"userpool";
-#[constant]
-pub const WHITELIST_SEED: &[u8] = b"whitelist";
-#[constant]
-pub const VESTING_PLAN_SEED: &[u8] = b"vestingplan";
+pub const RECORD_SEED: &[u8] = b"RECORD";

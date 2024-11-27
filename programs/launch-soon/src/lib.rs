@@ -9,13 +9,33 @@ pub use constants::*;
 pub use instructions::*;
 pub use state::*;
 
-declare_id!("DwhYs3FcJFbME9hkQkkEnvvk75kXYeRFrewAzkV7QgxS");
+declare_id!("53kV5CojwHsTMbzZ1PEhZoYLdvDffPEL2yVBJGbSBwFX");
 
 #[program]
 pub mod launch_soon {
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>, fee: u16) -> Result<()> {
-        ctx.accounts.handler(fee, &ctx.bumps)
+    pub fn initialize(ctx: Context<Initialize>, fee_rate: u16, creation_fee: u64) -> Result<()> {
+        ctx.accounts.handler(fee_rate, creation_fee, &ctx.bumps)
+    }
+
+    pub fn create_pool(ctx: Context<CreatePool>, args: CreatePoolArgs) -> Result<()> {
+        ctx.accounts.handler(args, &ctx.bumps)
+    }
+
+    pub fn finalize_pool(ctx: Context<FinalizePool>) -> Result<()> {
+        ctx.accounts.handler()
+    }
+
+    pub fn buy(ctx: Context<Buy>, lamports: u64) -> Result<()> {
+        ctx.accounts.handler(lamports, &ctx.bumps)
+    }
+
+    pub fn cancel_buy(ctx: Context<CancelBuy>) -> Result<()> {
+        ctx.accounts.handler()
+    }
+
+    pub fn claim(ctx: Context<Claim>) -> Result<()> {
+        ctx.accounts.handler()
     }
 }
