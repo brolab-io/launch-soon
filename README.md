@@ -1,5 +1,9 @@
 # A Launchpad Dapp for token presale
 
+# Pitch slide
+
+[Slide](https://docs.google.com/presentation/d/1UL65zx5oM9hpXsKOly_ytumd9IgOlIgLdHznEfoc_9k/edit?usp=sharing)
+
 # Features
 
 - Init dapp config
