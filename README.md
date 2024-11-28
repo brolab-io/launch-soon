@@ -4,6 +4,10 @@
 
 [Slide](https://docs.google.com/presentation/d/1UL65zx5oM9hpXsKOly_ytumd9IgOlIgLdHznEfoc_9k/edit?usp=sharing)
 
+# Deployed program
+
+[DJrC94xEi8AMbHh2Qz73CgovU9VfHW5F8MWS53KUisAz](https://explorer.devnet.soo.network/address/DJrC94xEi8AMbHh2Qz73CgovU9VfHW5F8MWS53KUisAz)
+
 # Features
 
 - Init dapp config
