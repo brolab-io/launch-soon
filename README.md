@@ -12,6 +12,7 @@
 
 - Init dapp config
 - Create a launchpool for token presale
+- Set whitelist for launchpool
 - Buy token via launchpool
 - Canncel buy if you want
 - Finalize launchpool
@@ -34,6 +35,8 @@
   - Minimum and maximum amount of currency that can be spent (**_min_buy_**, **_max_buy_**).
   - Soft cap and hard cap (**_soft_cap_**, **_hard_cap_**)
   - What do you want to do with the remaining tokens after the pool ends (**burn_unsold_tokens**), true if you want to burn, false if you want to return to the creator.
+
+- User (**_creator_**) can set whitelist for launchpool by adding a merkle root of the whitelist.
 
 - User (**_Investor_**) can buy token via launchpool by sending currency to launchpool address.
 
