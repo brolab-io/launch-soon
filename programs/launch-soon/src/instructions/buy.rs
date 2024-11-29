@@ -1,4 +1,4 @@
-use anchor_lang::{prelude::*, system_program::{self, Transfer}};
+use anchor_lang::{prelude::*, system_program::{self, Transfer}, solana_program::{keccak}};
 use anchor_spl::token_interface::{Mint, TokenInterface};
 
 use crate::{error::LaunchpadErrorCode, Pool, Record, POOL_SEED, RECORD_SEED, TREASURER_SEED};
@@ -46,8 +46,39 @@ pub struct Buy<'info> {
 }
 
 impl<'info> Buy<'info> {
-    pub fn handler(&mut self, lamports: u64, bumps: &BuyBumps) -> Result<()> {
-        self.pool.validate_for_buy_or_cancel()?;
+    pub fn handler(&mut self, lamports: u64, proof: Option<Vec<[u8; 32]>>, bumps: &BuyBumps) -> Result<()> {
+        msg!("Buy");
+        msg!("proof: {:?}", proof);
+        msg!("white list: {:?}", self.pool.whitelist);
+
+        // if let Some(_whitelist) = self.pool.whitelist {
+        //   return Err(LaunchpadErrorCode::InvalidFunction.into());
+        // };
+
+
+        // check if pool has whitelist and agrs proof is not empty
+        match (self.pool.whitelist, proof) {
+          (Some(_whitelist), Some(proof)) => {
+            let leaf = keccak::hashv(&[self.buyer.key().to_string().as_bytes()]);
+            require!(
+              self.pool.merkle_verify(proof.clone(), leaf.0),
+              LaunchpadErrorCode::NotInWhitelist,
+            );
+            self.execute(lamports, bumps)?;
+          },
+          (None, None) => {
+            self.execute(lamports, bumps)?;
+          },
+          _ => {
+            return Err(LaunchpadErrorCode::BadRequest.into());
+          }
+        }
+        Ok(())
+    }
+
+
+    fn execute(&mut self,lamports: u64, bumps: &BuyBumps) -> Result<()> {
+      self.pool.validate_for_buy_or_cancel()?;
 
         
         let estimated_lamports_amount = self.buyer_record.amount.checked_add(lamports).unwrap();
@@ -58,6 +89,7 @@ impl<'info> Buy<'info> {
           estimated_lamports_amount.ge(&self.pool.min_buy) && estimated_lamports_amount.le(&self.pool.max_buy),
           LaunchpadErrorCode::InvalidAmount
         );
+
 
         let token_amount_can_buy = lamports.checked_mul(self.pool.sale_rate).unwrap()
         .checked_div(10u64.pow(9))
@@ -100,7 +132,6 @@ impl<'info> Buy<'info> {
             token_amount: token_amount_can_buy,
           }
         );
-
-        Ok(())
+      Ok(())
     }
 }

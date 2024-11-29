@@ -1,6 +1,6 @@
-use anchor_lang::prelude::*;
-
 use crate::error::LaunchpadErrorCode;
+use anchor_lang::prelude::*;
+use anchor_lang::solana_program::keccak;
 
 #[account]
 #[derive(InitSpace)]
@@ -19,6 +19,7 @@ pub struct Pool {
     pub burn_unsold_tokens: bool,
     pub finalized: bool,
     pub raised: u64,
+    pub whitelist: Option<[u8; 32]>,
     pub bump: u8,
     pub treasurer_bump: u8,
 }
@@ -67,5 +68,17 @@ impl Pool {
         require!(self.finalized == true, LaunchpadErrorCode::PoolNotFinalized);
 
         Ok(())
+    }
+
+    pub fn merkle_verify(&self, proof: Vec<[u8; 32]>, leaf: [u8; 32]) -> bool {
+        let mut computed_hash = leaf;
+        for proof_element in proof.into_iter() {
+            if computed_hash <= proof_element {
+                computed_hash = keccak::hashv(&[&computed_hash, &proof_element]).0;
+            } else {
+                computed_hash = keccak::hashv(&[&proof_element, &computed_hash]).0;
+            }
+        }
+        computed_hash == self.whitelist.unwrap()
     }
 }

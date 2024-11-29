@@ -13,4 +13,6 @@ pub enum LaunchpadErrorCode {
     ReachedAmountLimit,
     AlreadyClaimed,
     ZeroAmount,
+    BadRequest,
+    NotInWhitelist,
 }

@@ -11,3 +11,6 @@ pub const TREASURER_SEED: &[u8] = b"TREASURER";
 
 #[constant]
 pub const RECORD_SEED: &[u8] = b"RECORD";
+
+#[constant]
+pub const WHITELIST_SEED: &[u8] = b"WHITELIST";

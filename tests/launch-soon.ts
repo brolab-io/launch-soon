@@ -1,7 +1,13 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program, BN, web3 } from "@coral-xyz/anchor";
 import { LaunchSoon } from "../target/types/launch_soon";
-import { getConfigAccount, getPoolAccount, getTreasurerAccount } from "./utils";
+import {
+  getConfigAccount,
+  getMerkleProof,
+  getMerkleRoot,
+  getPoolAccount,
+  getTreasurerAccount,
+} from "./utils";
 import { assert, expect } from "chai";
 import {
   createMint,
@@ -69,6 +75,11 @@ describe("launch-soon", () => {
   const maxBuy = new BN(0.5 * web3.LAMPORTS_PER_SOL);
   const softCap = new BN(1.5 * web3.LAMPORTS_PER_SOL);
   const hardCap = new BN(2.5 * web3.LAMPORTS_PER_SOL);
+
+  const WHITELIST_ADDRESS = [
+    user1.publicKey.toBase58(),
+    user2.publicKey.toBase58(),
+  ];
 
   before(async () => {
     {
@@ -220,6 +231,19 @@ describe("launch-soon", () => {
     expect(feeCollectorBalance).eq(CREATION_FEE.toNumber());
   });
 
+  it("Add whitelist successfully!", async () => {
+    const root = getMerkleRoot(WHITELIST_ADDRESS);
+    const tx = await program.methods
+      .setWhitelist(root as any)
+      .accounts({
+        creator: creator.publicKey,
+        mint: mintKeypair.publicKey,
+        tokenProgram: TOKEN_2022_PROGRAM_ID,
+      })
+      .signers([creator])
+      .rpc();
+  });
+
   it("User buy with wrong min amount will fail!", async () => {
     try {
       const poolAccount = getPoolAccount(
@@ -228,7 +252,7 @@ describe("launch-soon", () => {
         program.programId
       );
       await program.methods
-        .buy(minBuy.sub(new BN(1)))
+        .buy(minBuy.sub(new BN(1)), null)
         .accountsPartial({
           buyer: user1.publicKey,
           pool: poolAccount[0],
@@ -243,6 +267,10 @@ describe("launch-soon", () => {
   });
 
   it("User can buy token successfully!", async () => {
+    const proof1 = getMerkleProof(
+      WHITELIST_ADDRESS,
+      user1.publicKey.toBase58()
+    );
     // delay 2s to make sure the pool is created
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -252,7 +280,7 @@ describe("launch-soon", () => {
       program.programId
     );
     const tx = await program.methods
-      .buy(new BN(0.2 * web3.LAMPORTS_PER_SOL))
+      .buy(new BN(0.2 * web3.LAMPORTS_PER_SOL), proof1 as any)
       .accountsPartial({
         buyer: user1.publicKey,
         pool: poolAccount[0],
@@ -264,8 +292,13 @@ describe("launch-soon", () => {
 
     console.log("Your transaction signature", tx);
 
+    const proof2 = getMerkleProof(
+      WHITELIST_ADDRESS,
+      user2.publicKey.toBase58()
+    );
+
     await program.methods
-      .buy(new BN(0.5 * web3.LAMPORTS_PER_SOL))
+      .buy(new BN(0.5 * web3.LAMPORTS_PER_SOL), proof2 as any)
       .accountsPartial({
         buyer: user2.publicKey,
         pool: poolAccount[0],
@@ -284,7 +317,7 @@ describe("launch-soon", () => {
         program.programId
       );
       await program.methods
-        .buy(maxBuy.add(new BN(1)))
+        .buy(maxBuy.add(new BN(1)), null)
         .accountsPartial({
           buyer: user1.publicKey,
           pool: poolAccount[0],
@@ -405,7 +438,7 @@ describe("launch-soon", () => {
         program.programId
       );
       await program.methods
-        .buy(new BN(web3.LAMPORTS_PER_SOL))
+        .buy(new BN(web3.LAMPORTS_PER_SOL), null)
         .accountsPartial({
           buyer: user2.publicKey,
           pool: poolAccount[0],

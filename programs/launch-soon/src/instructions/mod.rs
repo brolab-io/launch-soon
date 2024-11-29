@@ -21,3 +21,6 @@ pub use cancel_buy::*;
 pub mod claim;
 
 pub use claim::*;
+
+pub mod set_whitelist;
+pub use set_whitelist::*;

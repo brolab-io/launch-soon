@@ -116,6 +116,7 @@ Transfer{
           raised: 0,
           burn_unsold_tokens: args.burn_unsold_tokens,
           finalized: false,
+          whitelist: None
         }
       );
 

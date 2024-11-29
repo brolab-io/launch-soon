@@ -27,8 +27,8 @@ pub mod launch_soon {
         ctx.accounts.handler()
     }
 
-    pub fn buy(ctx: Context<Buy>, lamports: u64) -> Result<()> {
-        ctx.accounts.handler(lamports, &ctx.bumps)
+    pub fn buy(ctx: Context<Buy>, lamports: u64, proof: Option<Vec<[u8; 32]>>) -> Result<()> {
+        ctx.accounts.handler(lamports, proof, &ctx.bumps)
     }
 
     pub fn cancel_buy(ctx: Context<CancelBuy>) -> Result<()> {
@@ -37,5 +37,9 @@ pub mod launch_soon {
 
     pub fn claim(ctx: Context<Claim>) -> Result<()> {
         ctx.accounts.handler()
+    }
+
+    pub fn set_whitelist(ctx: Context<SetWhitelist>, whitelist: [u8; 32]) -> Result<()> {
+        ctx.accounts.handler(whitelist)
     }
 }
